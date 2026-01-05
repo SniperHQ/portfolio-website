@@ -1,32 +1,47 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ project.title }} | Mcondisi{% endblock %}
 
 {% block content %}
 <section class="section project-detail">
+
     <div class="project-detail-container">
-        <!-- IMAGE -->
+
+        <!-- IMAGE GALLERY -->
         <div class="project-gallery">
-            <div class="main-image">
-                {% if project.image %}
-                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
-                {% else %}
-                    <p>No Image Available</p>
-                {% endif %}
-            </div>
+            {% if project.images.all %}
+                <div class="main-image">
+                    <img id="main-project-image" src="{{ project.images.first.image.url }}" alt="{{ project.title }}">
+                </div>
+
+                <div class="thumbnail-row">
+                    {% for img in project.images.all %}
+                        <img src="{{ img.image.url }}" alt="Thumbnail {{ forloop.counter }}" class="thumbnail" onclick="showImage(this)">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="poster-placeholder">No Images</div>
+            {% endif %}
         </div>
 
         <!-- CONTENT -->
         <div class="project-detail-content">
-            <h1 class="project-title">{{ project.title }}</h1>
-            <p class="project-description">{{ project.description }}</p>
 
+            <h1 class="project-title">{{ project.title }}</h1>
+
+            <p class="project-description">
+                {{ project.description }}
+            </p>
+
+            <!-- ACTION BUTTONS -->
             <div class="detail-actions">
                 {% if project.live_url %}
                 <a href="{{ project.live_url }}" target="_blank" class="btn primary">
                     Live Preview
                 </a>
                 {% endif %}
+
                 {% if project.github_url %}
                 <a href="{{ project.github_url }}" target="_blank" class="btn outline">
                     GitHub Repository
@@ -34,6 +49,7 @@
                 {% endif %}
             </div>
 
+            <!-- TECH STACK -->
             <div class="project-meta">
                 <h4>Tech Stack</h4>
                 <div class="tech-tags">
@@ -43,6 +59,7 @@
                 </div>
             </div>
 
+            <!-- FEATURES -->
             <div class="project-meta">
                 <h4>Key Features</h4>
                 <ul>
@@ -51,7 +68,25 @@
                     {% endfor %}
                 </ul>
             </div>
+
         </div>
     </div>
 </section>
+
+<style>
+.project-gallery { margin-bottom: 20px; text-align: center; }
+.main-image img { width: 100%; max-width: 600px; border-radius: 12px; object-fit: cover; }
+.thumbnail-row { margin-top: 10px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.thumbnail-row .thumbnail { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; }
+.thumbnail-row .thumbnail:hover { border-color: #4CAF50; }
+</style>
+
+<script>
+// Thumbnail click swaps main image
+function showImage(el) {
+    const mainImage = document.getElementById('main-project-image');
+    mainImage.src = el.src;
+}
+</script>
+
 {% endblock %}
