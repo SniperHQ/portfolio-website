@@ -5,7 +5,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-default-key-for-dev')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['portfolio-website-6mc1.onrender.com']
+
+ALLOWED_HOSTS = [
+    'portfolio-website-6mc1.onrender.com',
+    'portfolio-website-vrcd.onrender.com',  # if you want the old one too
+    'localhost',  # optional for local testing
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
