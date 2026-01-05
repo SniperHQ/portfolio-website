@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Projects | Mcondisi{% endblock %}
 
@@ -109,29 +110,26 @@
 const carousel = document.querySelector('.carousel-3d');
 const cards = Array.from(document.querySelectorAll('.carousel-card-link'));
 const total = cards.length;
-const radius = 300; // distance from center
-let rotationY = 0; // overall carousel rotation
+const radius = 300; 
+let rotationY = 0; 
 
-// ================== Arrange Cards ==================
 function updateCards() {
     const angleStep = 360 / total;
     cards.forEach((card, i) => {
         const angle = i * angleStep + rotationY;
-        // Convert angle to radians
         const rad = angle * Math.PI / 180;
         const x = Math.sin(rad) * radius;
         const z = Math.cos(rad) * radius;
-        const scale = (z + radius) / (2 * radius) * 0.6 + 0.4; // scaling based on depth
+        const scale = (z + radius) / (2 * radius) * 0.6 + 0.4;
         const opacity = (z + radius) / (2 * radius) * 0.5 + 0.5;
         card.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`;
-        card.style.zIndex = Math.floor(scale * 100); // front cards above
+        card.style.zIndex = Math.floor(scale * 100);
         card.style.opacity = opacity;
     });
 }
 updateCards();
 
-// ================== Auto-Rotate ==================
-let autoRotateSpeed = 0.2; // degrees per frame
+let autoRotateSpeed = 0.2; 
 function animate() {
     rotationY -= autoRotateSpeed;
     updateCards();
@@ -139,7 +137,6 @@ function animate() {
 }
 animate();
 
-// ================== Drag/Swipe ==================
 let isDragging = false;
 let startX;
 

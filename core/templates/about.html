@@ -16,7 +16,7 @@
         <div class="about-text">
             <p>{{ about_info.description }}</p>
 
-            {% if about_info and about_info.cv %}
+            {% if about_info.cv %}
             <a href="{% url 'download_cv' %}" class="btn-download-cv">
                 Download Resume (PDF)
             </a>
@@ -41,8 +41,7 @@
 
                         <div class="skill-name">
                             {% if skill.icon %}
-                                <!-- All skill icons now use static files for Render -->
-                                <img src="{% static 'images/skills/'|add:skill.icon %}" alt="{{ skill.name }}" class="skill-icon">
+                                <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="skill-icon">
                             {% endif %}
                             <span>{{ skill.name }}</span>
                         </div>
@@ -55,8 +54,11 @@
 
         <!-- ABOUT IMAGE -->
         <div class="about-image">
-            <!-- Use static image for production -->
-            <img src="{% static 'images/me-about.jpg' %}" alt="Mcondisi Ntshangase">
+            {% if about_info.image %}
+                <img src="{{ about_info.image.url }}" alt="Mcondisi Ntshangase">
+            {% else %}
+                <img src="{% static 'images/me-about.jpg' %}" alt="Mcondisi Ntshangase">
+            {% endif %}
         </div>
     </div>
 </section>
@@ -73,7 +75,7 @@
             <div class="timeline-item">
                 <div class="timeline-dot">
                     {% if event.icon %}
-                        <img src="{% static 'images/timeline/'|add:event.icon %}" alt="{{ event.title }}" class="timeline-icon">
+                        <img src="{{ event.icon.url }}" alt="{{ event.title }}" class="timeline-icon">
                     {% else %}
                         <span class="default-dot"></span>
                     {% endif %}

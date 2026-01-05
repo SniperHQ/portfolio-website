@@ -4,33 +4,29 @@
 
 {% block content %}
 <section class="section project-detail">
-
     <div class="project-detail-container">
-
         <!-- IMAGE -->
         <div class="project-gallery">
             <div class="main-image">
-                <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                {% else %}
+                    <p>No Image Available</p>
+                {% endif %}
             </div>
         </div>
 
         <!-- CONTENT -->
         <div class="project-detail-content">
-
             <h1 class="project-title">{{ project.title }}</h1>
+            <p class="project-description">{{ project.description }}</p>
 
-            <p class="project-description">
-                {{ project.description }}
-            </p>
-
-            <!-- ACTION BUTTONS -->
             <div class="detail-actions">
                 {% if project.live_url %}
                 <a href="{{ project.live_url }}" target="_blank" class="btn primary">
                     Live Preview
                 </a>
                 {% endif %}
-
                 {% if project.github_url %}
                 <a href="{{ project.github_url }}" target="_blank" class="btn outline">
                     GitHub Repository
@@ -38,7 +34,6 @@
                 {% endif %}
             </div>
 
-            <!-- TECH STACK -->
             <div class="project-meta">
                 <h4>Tech Stack</h4>
                 <div class="tech-tags">
@@ -48,7 +43,6 @@
                 </div>
             </div>
 
-            <!-- FEATURES -->
             <div class="project-meta">
                 <h4>Key Features</h4>
                 <ul>
@@ -57,7 +51,6 @@
                     {% endfor %}
                 </ul>
             </div>
-
         </div>
     </div>
 </section>
