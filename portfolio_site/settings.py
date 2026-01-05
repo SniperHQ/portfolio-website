@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+# ---------------- BASE ----------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-default-key-for-dev')
@@ -8,10 +9,11 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'portfolio-website-6mc1.onrender.com',
-    'portfolio-website-vrcd.onrender.com',  # if you want the old one too
-    'localhost',  # optional for local testing
+    'portfolio-website-vrcd.onrender.com',  # optional old URL
+    'localhost',
 ]
 
+# ---------------- APPS ----------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,8 +24,10 @@ INSTALLED_APPS = [
     'core',
 ]
 
+# ---------------- MIDDLEWARE ----------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # serves static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -34,17 +38,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'portfolio_site.urls'
 
+# ---------------- TEMPLATES ----------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # add extra template dirs here if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.views.base_context',
+                'core.views.base_context',  # your custom context
             ],
         },
     },
@@ -52,6 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portfolio_site.wsgi.application'
 
+# ---------------- DATABASE ----------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -59,21 +65,31 @@ DATABASES = {
     }
 }
 
+# ---------------- PASSWORD VALIDATORS ----------------
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+# ---------------- INTERNATIONALIZATION ----------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files
+# ---------------- STATIC FILES ----------------
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core/static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files
+# ---------------- MEDIA ----------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Email
+# ---------------- EMAIL ----------------
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -82,3 +98,11 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = EMAIL_HOST_USER
+
+# ---------------- SECURITY ----------------
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+
+# ---------------- DEFAULT AUTO FIELD ----------------
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
