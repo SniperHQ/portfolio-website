@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About | Mcondisi{% endblock %}
+
+{% block content %}
+
+<!-- ================= ABOUT SECTION ================= -->
+<section class="section about">
+    <div class="section-header reveal">
+        <h2>{{ about_info.title }}</h2>
+    </div>
+
+    <div class="about-content-container">
+        <!-- ABOUT TEXT -->
+        <div class="about-text">
+            <p>{{ about_info.description }}</p>
+
+            {% if about_info and about_info.cv %}
+    <a href="{% url 'download_cv' %}" class="btn-download-cv">
+        Download Resume (PDF)
+    </a>
+{% else %}
+    <p class="cv-unavailable">
+        Resume currently unavailable.
+    </p>
+{% endif %}
+
+
+            <!-- SKILLS -->
+            {% if skills %}
+            <div class="about-skills">
+                <h3>My Skills</h3>
+
+                <ul class="skills-list">
+                    {% for skill in skills %}
+                    <li class="skill-card">
+                        <div class="skill-circle" data-percentage="{{ skill.proficiency }}">
+                            <svg width="120" height="120">
+                                <circle class="skill-bg" cx="60" cy="60" r="50"></circle>
+                                <circle class="skill-progress" cx="60" cy="60" r="50"></circle>
+                            </svg>
+                            <span class="skill-percentage">{{ skill.proficiency }}%</span>
+                        </div>
+
+                        <div class="skill-name">
+                            {% if skill.icon %}
+                                {% if skill.icon|slice:":7" == "images/" %}
+                                    <img src="{% static skill.icon %}" alt="{{ skill.name }}" class="skill-icon">
+                                {% else %}
+                                    {{ skill.icon }}
+                                {% endif %}
+                            {% endif %}
+                            <span>{{ skill.name }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ABOUT IMAGE -->
+        <div class="about-image">
+            {% if about_info.image %}
+                <img src="{{ about_info.image.url }}" alt="Mcondisi Ntshangase">
+            {% else %}
+                <img src="{% static 'images/me-about.jpg' %}" alt="Mcondisi Ntshangase">
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ================= TIMELINE ================= -->
+<section class="section timeline">
+    <div class="section-header reveal">
+        <h2>My Journey</h2>
+    </div>
+
+    <div class="timeline-container">
+        {% if timeline %}
+            {% for event in timeline %}
+            <div class="timeline-item">
+                <div class="timeline-dot">
+                    {% if event.icon %}
+                        {% if event.icon|slice:":7" == "images/" %}
+                            <img src="{% static event.icon %}" alt="{{ event.title }}" class="timeline-icon">
+                        {% else %}
+                            {{ event.icon }}
+                        {% endif %}
+                    {% else %}
+                        <span class="default-dot"></span>
+                    {% endif %}
+                </div>
+
+                <div class="timeline-content">
+                    <span class="timeline-date">{{ event.year }}</span>
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="timeline-empty">No journey items added yet.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ================= STYLES ================= -->
+<style>
+/* DOWNLOAD CV */
+.btn-download-cv {
+    display: inline-block;
+    margin: 20px 0 30px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #4CAF50, #2e8b57);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+.btn-download-cv:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* ===========================
+   SKILLS LIST & CARDS
+=========================== */
+.skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.skill-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.skill-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-circle svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.skill-bg {
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 10;
+}
+
+.skill-progress {
+    fill: none;
+    stroke: #4CAF50;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.skill-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    pointer-events: none;
+}
+
+.skill-name {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.skill-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+
+/* TIMELINE */
+.timeline-container {
+    margin-top: 40px;
+}
+.timeline-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.6s ease;
+}
+.timeline-item.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+.timeline-dot {
+    min-width: 24px;
+}
+.default-dot {
+    width: 14px;
+    height: 14px;
+    background: #4CAF50;
+    border-radius: 50%;
+}
+.timeline-content h3 {
+    margin: 5px 0;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .about-content-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .about-image img {
+        max-width: 260px;
+        margin: 20px auto 0;
+    }
+}
+</style>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const skillCircles = document.querySelectorAll(".skill-circle");
+    const timelineItems = document.querySelectorAll(".timeline-item");
+
+    // Init skill circles
+    skillCircles.forEach(circle => {
+        const progress = circle.querySelector(".skill-progress");
+        const radius = progress.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        progress.style.strokeDasharray = circumference;
+        progress.style.strokeDashoffset = circumference;
+    });
+
+    function animateOnScroll() {
+        skillCircles.forEach(circle => {
+            const rect = circle.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 60) {
+                const progress = circle.querySelector(".skill-progress");
+                const percent = circle.dataset.percentage;
+                const radius = progress.r.baseVal.value;
+                const circumference = 2 * Math.PI * radius;
+                progress.style.strokeDashoffset =
+                    circumference - (percent / 100) * circumference;
+            }
+        });
+
+        timelineItems.forEach(item => {
+            if (item.getBoundingClientRect().top < window.innerHeight - 80) {
+                item.classList.add("active");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", animateOnScroll);
+    animateOnScroll();
+});
+</script>
+
+{% endblock %}

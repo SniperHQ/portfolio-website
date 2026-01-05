@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home | Mqondisi{% endblock %}
+
+{% block content %}
+<section class="hero">
+
+    <!-- LEFT CONTENT -->
+    <div class="hero-left reveal">
+
+        {% if hero %}
+            <h1>Hi, I'm <span>{{ hero.name }}</span></h1>
+            <h2>{{ hero.title }}</h2>
+            <p>{{ hero.description }}</p>
+        {% else %}
+            <h1>Hi, I'm <span>MQONDISI HENDRY NTSHANGASE</span></h1>
+            <h2>Full Stack & Java Developer</h2>
+            <p>
+                I build modern web applications with Django,
+                interactive desktop apps using JavaFX,
+                and scalable Java solutions for real-world systems.
+            </p>
+        {% endif %}
+
+        <!-- HERO BUTTONS -->
+        <div class="hero-buttons">
+            <a href="{% url 'projects' %}" class="btn primary">View Work</a>
+
+            <a href="{% url 'contact' %}" class="btn outline">Hire Me</a>
+
+            {% if hero and hero.github_url %}
+                <a href="{{ hero.github_url }}" target="_blank" class="btn outline">
+                    GitHub
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT IMAGE -->
+    <div class="hero-right reveal">
+        {% if hero and hero.image %}
+            <img src="{{ hero.image.url }}" alt="{{ hero.name }}">
+        {% else %}
+            
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}

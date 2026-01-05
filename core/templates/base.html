@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mqondisi | Web Developer{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+
+<header>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="logo">
+            <a href="{% url 'home' %}">Mqondisi<span class="dot">.</span></a>
+        </div>
+
+        <div class="hamburger" id="hamburger">
+            <span></span><span></span><span></span>
+        </div>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+            <li><a href="{% url 'about' %}" class="{% if request.path == '/about/' %}active{% endif %}">About</a></li>
+            <li><a href="{% url 'services' %}" class="{% if request.path == '/services/' %}active{% endif %}">Services</a></li>
+            <li><a href="{% url 'projects' %}" class="{% if request.path == '/projects/' %}active{% endif %}">Projects</a></li>
+            <li><a href="{% url 'contact' %}" class="btn-nav">Hire Me</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <div class="footer-social">
+        {% for link in social_links %}
+            <a href="{{ link.url }}" target="_blank" class="social-link" title="{{ link.name }}">
+                {{ link.icon|safe }}
+            </a>
+        {% endfor %}
+    </div>
+    <p>© {% now "Y" %} Mqondisi Ntshangase. All Rights Reserved.</p>
+</footer>
+
+<!-- =====================
+     SCRIPTS
+===================== -->
+
+<!-- Hamburger Menu Toggle -->
+<script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+});
+</script>
+
+<!-- Smooth Scroll -->
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelector(anchor.getAttribute('href'))
+            ?.scrollIntoView({ behavior: 'smooth' });
+    });
+});
+</script>
+
+<!-- Navbar Scroll Effect -->
+<script>
+const navbar = document.querySelector('.navbar');
+const hero = document.querySelector('.hero');
+const heroHeight = hero ? hero.offsetHeight : 0;
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > heroHeight - 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+</script>
+
+<!-- Skill Circle Animation -->
+<script>
+const skills = document.querySelectorAll('.skill-circle');
+
+function animateSkills() {
+    skills.forEach(skill => {
+        const rect = skill.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 50) {
+            const circle = skill.querySelector('.skill-progress');
+            const percentage = skill.getAttribute('data-percentage');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+    });
+}
+
+document.querySelectorAll('.skill-progress').forEach(circle => {
+    const radius = circle.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = circumference;
+});
+
+window.addEventListener('scroll', animateSkills);
+window.addEventListener('load', animateSkills);
+</script>
+
+<!-- Reveal Animation -->
+<script>
+const reveals = document.querySelectorAll(".reveal");
+
+function revealOnScroll() {
+    reveals.forEach(el => {
+        const elementTop = el.getBoundingClientRect().top;
+        if (elementTop < window.innerHeight - 100) {
+            el.classList.add("active");
+        }
+    });
+}
+window.addEventListener("scroll", revealOnScroll);
+revealOnScroll();
+</script>
+
+</body>
+</html>

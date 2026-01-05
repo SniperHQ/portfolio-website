@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects | Mcondisi{% endblock %}
+
+{% block content %}
+<section class="section projects" id="projects">
+    <div class="section-header reveal">
+        <h2>My Projects</h2>
+        <p>Click a project to view full details.</p>
+    </div>
+
+    <div class="carousel-3d-wrapper">
+        <div class="carousel-3d">
+            {% for project in projects %}
+            <a href="{% url 'project_detail' project.id %}" class="carousel-card-link">
+                <div class="carousel-card">
+                    {% if project.image %}
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                    {% else %}
+                    <div class="poster-placeholder">No Image</div>
+                    {% endif %}
+                    <div class="carousel-overlay">
+                        <h3>{{ project.title }}</h3>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+/* ================== 3D Coverflow Carousel ================== */
+.carousel-3d-wrapper {
+    perspective: 1500px;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.carousel-3d {
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+}
+
+.carousel-card-link {
+    position: absolute;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.5s, z-index 0.5s;
+}
+
+.carousel-card {
+    width: 250px;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+
+.carousel-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.carousel-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0.6rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    color: #fff;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .carousel-card { width: 200px; height: 150px; }
+    .carousel-3d-wrapper { height: 300px; }
+}
+@media (max-width: 768px) {
+    .carousel-card { width: 150px; height: 120px; }
+    .carousel-3d-wrapper { height: 250px; }
+}
+@media (max-width: 480px) {
+    .carousel-card { width: 120px; height: 100px; }
+    .carousel-3d-wrapper { height: 180px; }
+    .carousel-overlay h3 { font-size: 0.8rem; }
+}
+</style>
+
+<script>
+const carousel = document.querySelector('.carousel-3d');
+const cards = Array.from(document.querySelectorAll('.carousel-card-link'));
+const total = cards.length;
+const radius = 300; // distance from center
+let rotationY = 0; // overall carousel rotation
+
+// ================== Arrange Cards ==================
+function updateCards() {
+    const angleStep = 360 / total;
+    cards.forEach((card, i) => {
+        const angle = i * angleStep + rotationY;
+        // Convert angle to radians
+        const rad = angle * Math.PI / 180;
+        const x = Math.sin(rad) * radius;
+        const z = Math.cos(rad) * radius;
+        const scale = (z + radius) / (2 * radius) * 0.6 + 0.4; // scaling based on depth
+        const opacity = (z + radius) / (2 * radius) * 0.5 + 0.5;
+        card.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`;
+        card.style.zIndex = Math.floor(scale * 100); // front cards above
+        card.style.opacity = opacity;
+    });
+}
+updateCards();
+
+// ================== Auto-Rotate ==================
+let autoRotateSpeed = 0.2; // degrees per frame
+function animate() {
+    rotationY -= autoRotateSpeed;
+    updateCards();
+    requestAnimationFrame(animate);
+}
+animate();
+
+// ================== Drag/Swipe ==================
+let isDragging = false;
+let startX;
+
+function startDrag(e) {
+    isDragging = true;
+    startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+}
+
+function onDrag(e) {
+    if(!isDragging) return;
+    const x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const delta = x - startX;
+    rotationY += delta * 0.3;
+    startX = x;
+    updateCards();
+}
+
+function endDrag() {
+    isDragging = false;
+}
+
+carousel.addEventListener('mousedown', startDrag);
+carousel.addEventListener('mousemove', onDrag);
+carousel.addEventListener('mouseup', endDrag);
+carousel.addEventListener('mouseleave', endDrag);
+
+carousel.addEventListener('touchstart', startDrag);
+carousel.addEventListener('touchmove', onDrag);
+carousel.addEventListener('touchend', endDrag);
+</script>
+
+{% endblock %}

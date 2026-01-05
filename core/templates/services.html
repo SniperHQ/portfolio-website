@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Services | Mcondisi{% endblock %}
+
+{% block content %}
+<section class="section services">
+    <div class="section-header reveal">
+        <h2>Services</h2>
+        <p>Solutions I offer to help businesses grow online.</p>
+    </div>
+
+    <div class="carousel-wrapper">
+        <div class="carousel">
+            <!-- Cards -->
+            <a href="#web-design" class="carousel-card">
+                <div class="card service-card reveal">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M3 4h18v2H3V4zm0 4h18v14H3V8zm2 2v10h14V10H5z"/>
+                        </svg>
+                    </div>
+                    <h3>Web Design</h3>
+                    <p>Clean, modern, responsive websites that build trust.</p>
+                </div>
+            </a>
+
+            <a href="#frontend-development" class="carousel-card">
+                <div class="card service-card reveal">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M8 5v14l-5-7 5-7zm8 0l5 7-5 7V5z"/>
+                        </svg>
+                    </div>
+                    <h3>Frontend Development</h3>
+                    <p>Fast, interactive user interfaces using modern tech.</p>
+                </div>
+            </a>
+
+            <a href="#django-web-applications" class="carousel-card">
+                <div class="card service-card reveal">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M4 4h16v16H4V4zm4 4v8h2V8H8zm4 0v8h2V8h-2z"/>
+                        </svg>
+                    </div>
+                    <h3>Django Web Apps</h3>
+                    <p>Secure, scalable web apps with dashboards and database integration.</p>
+                </div>
+            </a>
+
+            <a href="#ui-ux-optimization" class="carousel-card">
+                <div class="card service-card reveal">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M12 2l7 7-7 7-7-7 7-7zm0 10l7 7H5l7-7z"/>
+                        </svg>
+                    </div>
+                    <h3>UI/UX Optimization</h3>
+                    <p>Improving usability and user experience to increase engagement.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Carousel wrapper */
+.carousel-wrapper {
+    perspective: 1000px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+/* Carousel container */
+.carousel {
+    display: flex;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+}
+
+/* Cards */
+.carousel-card {
+    flex: 0 0 250px;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+.card.service-card {
+    background-color: var(--card-bg, #fff); /* Keep style.css color */
+    color: var(--card-text, #131313);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.5s, box-shadow 0.5s;
+}
+
+/* Hover effect */
+.card.service-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* Service icon spacing */
+.card .service-icon {
+    margin-bottom: 15px;
+}
+
+/* Responsive adjustments */
+@media(max-width: 1024px) { .carousel-card { flex: 0 0 200px; } }
+@media(max-width: 768px) { .carousel-card { flex: 0 0 180px; } }
+@media(max-width: 480px) { .carousel-card { flex: 0 0 150px; } }
+</style>
+
+<script>
+const carousel = document.querySelector('.carousel');
+let cards = Array.from(document.querySelectorAll('.carousel-card'));
+const total = cards.length;
+
+// Clone cards for seamless infinite scroll
+cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    carousel.appendChild(clone);
+});
+cards = Array.from(document.querySelectorAll('.carousel-card'));
+
+// Linear rotation
+let position = 0;
+const speed = 0.3;
+
+function animate() {
+    position -= speed;
+    if(position <= -carousel.scrollWidth / 2) position = 0; // loop
+    carousel.style.transform = `translateX(${position}px)`;
+    requestAnimationFrame(animate);
+}
+animate();
+
+// Drag/swipe support
+let isDragging = false, startX;
+
+function startDrag(e) {
+    isDragging = true;
+    startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+}
+function onDrag(e) {
+    if(!isDragging) return;
+    const x = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const delta = x - startX;
+    position += delta;
+    startX = x;
+}
+function endDrag() { isDragging = false; }
+
+carousel.addEventListener('mousedown', startDrag);
+carousel.addEventListener('mousemove', onDrag);
+carousel.addEventListener('mouseup', endDrag);
+carousel.addEventListener('mouseleave', endDrag);
+
+carousel.addEventListener('touchstart', startDrag);
+carousel.addEventListener('touchmove', onDrag);
+carousel.addEventListener('touchend', endDrag);
+</script>
+{% endblock %}
