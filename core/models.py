@@ -19,18 +19,17 @@ class HeroSection(models.Model):
         return self.name
 
 
+# ---------------- About ----------------
 class About(models.Model):
     title = models.CharField(max_length=200, default="About Me")
     description = models.TextField()
     image = models.ImageField(upload_to='about/', blank=True, null=True)
-
     cv = models.FileField(
         upload_to='cv/',
         blank=True,
         null=True,
         help_text="Upload PDF resume only"
     )
-
     cv_downloads = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -66,7 +65,6 @@ class TimelineEvent(models.Model):
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    image = models.ImageField(upload_to='projects/')
     live_url = models.URLField(blank=True, null=True)
     github_url = models.URLField(blank=True, null=True)
     tech_stack = models.CharField(max_length=255)
@@ -81,6 +79,18 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ProjectImage(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='projects/')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.project.title} Image {self.id}"
 
 
 # ---------------- Services ----------------
