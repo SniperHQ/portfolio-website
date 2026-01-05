@@ -15,8 +15,8 @@
             {% for project in projects %}
             <a href="{% url 'project_detail' project.id %}" class="carousel-card-link">
                 <div class="carousel-card">
-                    {% if project.images.all %}
-                        <img src="{{ project.images.first.image.url }}" alt="{{ project.title }}">
+                    {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}">
                     {% else %}
                         <div class="poster-placeholder">No Image</div>
                     {% endif %}
@@ -87,6 +87,20 @@
     padding: 0.6rem;
     background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     color: #fff;
+    text-align: center;
+}
+
+/* Placeholder for missing images */
+.poster-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-weight: bold;
+    font-size: 1rem;
     text-align: center;
 }
 
