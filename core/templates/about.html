@@ -1,28 +1,22 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}About | Mcondisi{% endblock %}
+{% block title %}About Me | Mcondisi{% endblock %}
 
 {% block content %}
+<section class="about-section">
+    <div class="about-container">
+        <!-- LEFT: Image -->
+        <div class="about-left reveal">
+            <img src="{% static 'images/profile.jpg' %}" alt="Mcondisi" class="profile-img">
+        </div>
 
-<!-- ================= ABOUT SECTION ================= -->
-<section class="section about">
-    <div class="section-header reveal">
-        <h2>{{ about_info.title }}</h2>
-    </div>
-
-    <div class="about-content-container">
-        <!-- ABOUT TEXT -->
-        <div class="about-text">
-            <p>{{ about_info.description }}</p>
-
-            {% if about_info.cv %}
-            <a href="{% url 'download_cv' %}" class="btn-download-cv">
-                Download Resume (PDF)
-            </a>
-            {% else %}
-            <p class="cv-unavailable">Resume currently unavailable.</p>
-            {% endif %}
+        <!-- RIGHT: Info + Skills -->
+        <div class="about-right reveal">
+            <h2>About Me</h2>
+            <p>
+                Hi, I'm Mcondisi, a passionate Web Developer. I build clean, modern websites and systems
+                that help businesses grow online. I love creating interactive, responsive, and visually
+                appealing interfaces.
+            </p>
 
             <!-- SKILLS -->
             {% if skills %}
@@ -33,15 +27,20 @@
                     <li class="skill-card">
                         <div class="skill-circle" data-percentage="{{ skill.proficiency }}">
                             <svg width="120" height="120">
+                                <defs>
+                                    <linearGradient id="grad-{{ forloop.counter }}" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#00bfff"/>
+                                        <stop offset="100%" stop-color="#32cd32"/>
+                                    </linearGradient>
+                                </defs>
                                 <circle class="skill-bg" cx="60" cy="60" r="50"></circle>
-                                <circle class="skill-progress" cx="60" cy="60" r="50"></circle>
+                                <circle class="skill-progress" cx="60" cy="60" r="50" stroke="url(#grad-{{ forloop.counter }})"></circle>
                             </svg>
-                            <span class="skill-percentage">{{ skill.proficiency }}%</span>
+                            <span class="skill-inner">{{ skill.proficiency }}%</span>
                         </div>
-
                         <div class="skill-name">
                             {% if skill.icon %}
-                                <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="skill-icon">
+                            <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="skill-icon">
                             {% endif %}
                             <span>{{ skill.name }}</span>
                         </div>
@@ -51,118 +50,148 @@
             </div>
             {% endif %}
         </div>
-
-        <!-- ABOUT IMAGE -->
-        <div class="about-image">
-            {% if about_info.image %}
-                <img src="{{ about_info.image.url }}" alt="Mcondisi Ntshangase">
-            {% else %}
-                <img src="{% static 'images/me-about.jpg' %}" alt="Mcondisi Ntshangase">
-            {% endif %}
-        </div>
     </div>
 </section>
 
-<!-- ================= TIMELINE ================= -->
-<section class="section timeline">
-    <div class="section-header reveal">
-        <h2>My Journey</h2>
-    </div>
-
-    <div class="timeline-container">
-        {% if timeline %}
-            {% for event in timeline %}
-            <div class="timeline-item">
-                <div class="timeline-dot">
-                    {% if event.icon %}
-                        <img src="{{ event.icon.url }}" alt="{{ event.title }}" class="timeline-icon">
-                    {% else %}
-                        <span class="default-dot"></span>
-                    {% endif %}
-                </div>
-
-                <div class="timeline-content">
-                    <span class="timeline-date">{{ event.year }}</span>
-                    <h3>{{ event.title }}</h3>
-                    <p>{{ event.description }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p class="timeline-empty">No journey items added yet.</p>
-        {% endif %}
-    </div>
-</section>
-
-<!-- ================= STYLES ================= -->
+<!-- PAGE SPECIFIC STYLES -->
 <style>
-/* DOWNLOAD CV */
-.btn-download-cv { display: inline-block; margin: 20px 0 30px; padding: 12px 28px; background: linear-gradient(135deg, #4CAF50, #2e8b57); color: #fff; border-radius: 10px; font-weight: 600; text-decoration: none; transition: 0.3s ease;}
-.btn-download-cv:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.25);}
+.about-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+}
 
-/* SKILLS */
-.skills-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 30px; margin-top: 25px; }
-.skill-card { display: flex; flex-direction: column; align-items: center; }
-.skill-circle { position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; }
-.skill-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.skill-bg { fill: none; stroke: #ddd; stroke-width: 10; }
-.skill-progress { fill: none; stroke: #4CAF50; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease-out; }
-.skill-percentage { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; font-weight: bold; color: #333; pointer-events: none; }
-.skill-name { margin-top: 10px; text-align: center; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-.skill-icon { width: 20px; height: 20px; vertical-align: middle; }
+.about-left, .about-right {
+    flex: 1 1 300px;
+}
 
-/* TIMELINE */
-.timeline-container { margin-top: 40px; }
-.timeline-item { display: flex; gap: 20px; margin-bottom: 30px; opacity: 0; transform: translateY(30px); transition: 0.6s ease; }
-.timeline-item.active { opacity: 1; transform: translateY(0); }
-.timeline-dot { min-width: 24px; }
-.default-dot { width: 14px; height: 14px; background: #4CAF50; border-radius: 50%; }
-.timeline-content h3 { margin: 5px 0; }
+.profile-img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+}
 
-/* MOBILE */
+/* SKILLS SECTION */
+.about-skills {
+    margin-top: 30px;
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: flex-start;
+    list-style: none;
+    padding: 0;
+}
+
+.skill-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.skill-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.skill-circle svg {
+    position: absolute;
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.skill-circle circle {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+}
+
+.skill-bg {
+    stroke: rgba(255,255,255,0.1);
+}
+
+.skill-progress {
+    stroke-dasharray: 314; /* 2 * PI * 50 */
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.skill-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 600;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+}
+
+.skill-name {
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.skill-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border-radius: 3px;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
-    .about-content-container { flex-direction: column; text-align: center; }
-    .about-image img { max-width: 260px; margin: 20px auto 0; }
+    .about-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .skills-list {
+        justify-content: center;
+    }
 }
 </style>
 
-<!-- ================= SCRIPT ================= -->
+<!-- PAGE SPECIFIC SCRIPTS -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const skillCircles = document.querySelectorAll(".skill-circle");
-    const timelineItems = document.querySelectorAll(".timeline-item");
 
-    skillCircles.forEach(circle => {
+    const animateSkill = (circle) => {
         const progress = circle.querySelector(".skill-progress");
+        const percent = circle.dataset.percentage;
         const radius = progress.r.baseVal.value;
         const circumference = 2 * Math.PI * radius;
         progress.style.strokeDasharray = circumference;
         progress.style.strokeDashoffset = circumference;
-    });
 
-    function animateOnScroll() {
-        skillCircles.forEach(circle => {
-            const rect = circle.getBoundingClientRect();
-            if (rect.top < window.innerHeight - 60) {
-                const progress = circle.querySelector(".skill-progress");
-                const percent = circle.dataset.percentage;
-                const radius = progress.r.baseVal.value;
-                const circumference = 2 * Math.PI * radius;
-                progress.style.strokeDashoffset =
-                    circumference - (percent / 100) * circumference;
+        setTimeout(() => {
+            progress.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+        }, 200);
+    };
+
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateSkill(entry.target);
+                obs.unobserve(entry.target);
             }
         });
+    }, { threshold: 0.5 });
 
-        timelineItems.forEach(item => {
-            if (item.getBoundingClientRect().top < window.innerHeight - 80) {
-                item.classList.add("active");
-            }
-        });
-    }
-
-    window.addEventListener("scroll", animateOnScroll);
-    animateOnScroll();
+    skillCircles.forEach(circle => observer.observe(circle));
 });
 </script>
-
 {% endblock %}
