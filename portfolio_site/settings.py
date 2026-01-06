@@ -1,9 +1,6 @@
 import os
 from pathlib import Path
 
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 # --------------------------------------------------
 # BASE
@@ -23,12 +20,22 @@ ALLOWED_HOSTS = [
 # --------------------------------------------------
 # CLOUDINARY CONFIG
 # --------------------------------------------------
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
     api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
     secure=True,
 )
+
+# --------------------------------------------------
+# MEDIA FILES (Cloudinary)
+# --------------------------------------------------
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_URL = "/media/"
 
 # --------------------------------------------------
 # APPS
@@ -149,9 +156,16 @@ CONTACT_EMAIL = EMAIL_HOST_USER
 # --------------------------------------------------
 # SECURITY (Production)
 # --------------------------------------------------
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+else:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
+
+
 
 # --------------------------------------------------
 # DEFAULT PRIMARY KEY
