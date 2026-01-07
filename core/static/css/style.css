@@ -386,70 +386,39 @@ a {
     text-align: center;
 }
 
-/* Timeline Section */
-.timeline-container {
-    position: relative;
-    padding-left: 30px;
-    margin-top: 50px;
-}
-
-.timeline-container::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, #00bfff, #009acd);
-    border-radius: 2px;
-}
-
-.timeline-item {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 40px;
-    padding-left: 40px;
-}
-
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 12px;
-    top: 0;
-    width: 16px;
-    height: 16px;
-    background: #00bfff;
-    border-radius: 50%;
-    border: 3px solid #fff;
-}
-
-.timeline-icon {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    margin-right: 10px;
-}
+/* ================= JOURNEY / TIMELINE FIX ================= */
 
 .timeline-content {
-    background: #0b2d4f;
-    padding: 15px 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,191,255,0.2);
+    background: var(--bg-dark-alt); /* dark blue theme */
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 25px rgba(0,191,255,0.25);
+    flex: 1;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .timeline-content:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 25px rgba(0,191,255,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 35px rgba(0,191,255,0.4);
 }
 
-.timeline-date {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #00bfff;
+/* Text inside journey cards */
+.timeline-content h3,
+.timeline-title {
+    color: var(--text-light);
 }
+
+.timeline-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.timeline-year,
+.timeline-date {
+    color: var(--primary);
+    font-weight: 700;
+}
+
 
 /* ===========================
    PROJECTS

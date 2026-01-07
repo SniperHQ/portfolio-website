@@ -154,65 +154,39 @@
     height: 20px;
 }
 
-/* ================= JOURNEY ================= */
-.journey {
-    margin-top: 80px;
-}
-
-.timeline {
-    max-width: 800px;
-    margin: 50px auto 0;
-    position: relative;
-}
-
-.timeline::before {
-    content: "";
-    position: absolute;
-    left: 18px;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: #0077ff;
-}
-
-.timeline-item {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 40px;
-    position: relative;
-}
-
-.timeline-dot {
-    width: 40px;
-    display: flex;
-    justify-content: center;
-}
-
-.timeline-dot span,
-.timeline-dot img {
-    width: 16px;
-    height: 16px;
-    background: #0077ff;
-    border-radius: 50%;
-    margin-top: 6px;
-}
-
-.timeline-dot img {
-    object-fit: cover;
-}
+/* ================= JOURNEY / TIMELINE FIX ================= */
 
 .timeline-content {
-    background: #fff;
-    padding: 18px 22px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    background: var(--bg-dark-alt); /* dark blue theme */
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 25px rgba(0,191,255,0.25);
+    flex: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.timeline-year {
-    font-size: 14px;
-    font-weight: bold;
-    color: #0077ff;
+.timeline-content:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 35px rgba(0,191,255,0.4);
 }
+
+/* Text inside journey cards */
+.timeline-content h3,
+.timeline-title {
+    color: var(--text-light);
+}
+
+.timeline-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.timeline-year,
+.timeline-date {
+    color: var(--primary);
+    font-weight: 700;
+}
+
 
 /* MOBILE */
 @media (max-width: 768px) {
