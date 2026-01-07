@@ -16,6 +16,13 @@
         {% endif %}
     </div>
 
+    <!-- ================= ABOUT IMAGE ================= -->
+    {% if about_info.image %}
+    <div class="about-image reveal">
+        <img src="{{ about_info.image.url }}" alt="About {{ about_info.title }}">
+    </div>
+    {% endif %}
+
     <!-- ================= SKILLS ================= -->
     <ul class="skills-list">
         {% for skill in skills %}
@@ -69,6 +76,25 @@
 
 <!-- ================= STYLES ================= -->
 <style>
+/* ABOUT IMAGE */
+.about-image {
+    margin: 40px auto 10px;
+    max-width: 260px;
+    text-align: center;
+}
+
+.about-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 191, 255, 0.35);
+    transition: transform 0.3s ease;
+}
+
+.about-image img:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
 /* DOWNLOAD CV */
 .btn-download-cv {
     display: inline-block;
@@ -154,10 +180,9 @@
     height: 20px;
 }
 
-/* ================= JOURNEY / TIMELINE FIX ================= */
-
+/* JOURNEY */
 .timeline-content {
-    background: var(--bg-dark-alt); /* dark blue theme */
+    background: var(--bg-dark-alt);
     padding: 20px 25px;
     border-radius: 15px;
     box-shadow: 0 6px 25px rgba(0,191,255,0.25);
@@ -170,9 +195,7 @@
     box-shadow: 0 10px 35px rgba(0,191,255,0.4);
 }
 
-/* Text inside journey cards */
-.timeline-content h3,
-.timeline-title {
+.timeline-content h3 {
     color: var(--text-light);
 }
 
@@ -181,22 +204,13 @@
     line-height: 1.6;
 }
 
-.timeline-year,
-.timeline-date {
+.timeline-year {
     color: var(--primary);
     font-weight: 700;
 }
-
-
-/* MOBILE */
-@media (max-width: 768px) {
-    .timeline {
-        padding-left: 10px;
-    }
-}
 </style>
 
-<!-- ================= SCRIPT ================= -->
+<!-- ================= SCRIPT (UNCHANGED) ================= -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const skillCircles = document.querySelectorAll(".skill-circle");
