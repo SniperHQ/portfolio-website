@@ -172,8 +172,9 @@ else:
 # --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+import os
 
-TWILIO_ACCOUNT_SID = "ACd138b194f90dac20bec276297a0c43bd"
-TWILIO_AUTH_TOKEN = "e6ef94212380e28564cc95f018d42209"
-TWILIO_WHATSAPP_NUMBER = "whatsapp:+14155238886"  # Your Twilio sandbox number
-MY_WHATSAPP_NUMBER = "whatsapp:+27636825103"  # Your number to receive messages
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
+MY_WHATSAPP_NUMBER = os.getenv("MY_WHATSAPP_NUMBER")
