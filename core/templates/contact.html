@@ -24,16 +24,17 @@
         {% endif %}
 
         <!-- Contact Form -->
-        <form method="post" class="contact-form reveal">
-            {% csrf_token %}
-            <input type="text" name="name" placeholder="Full Name" required>
-            <input type="email" name="email" placeholder="Email Address" required>
-            <textarea name="message" placeholder="Your Message" required></textarea>
+<form method="post" class="contact-form reveal">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="email" name="email" placeholder="Email Address" required>
+    <input type="tel" name="phone" placeholder="Phone Number (WhatsApp)" required>
+    <textarea name="message" placeholder="Your Message" required></textarea>
 
-            <button type="submit" class="btn primary">
-                <i class="fas fa-paper-plane"></i> Send Message
-            </button>
-        </form>
+    <button type="submit" class="btn primary">
+        <i class="fas fa-paper-plane"></i> Send Message
+    </button>
+</form>
 
         <!-- Contact Info -->
         {% if contact_info %}
