@@ -79,21 +79,33 @@
 /* ABOUT IMAGE */
 .about-image {
     margin: 40px auto 10px;
-    max-width: 260px;
-    text-align: center;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 0 6px rgba(0,191,255,0.15),
+        0 20px 40px rgba(0,191,255,0.35);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
 .about-image img {
     width: 100%;
-    height: auto;
-    border-radius: 18px;
-    box-shadow: 0 10px 35px rgba(0, 191, 255, 0.35);
-    transition: transform 0.3s ease;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
-.about-image img:hover {
-    transform: translateY(-4px) scale(1.02);
+.about-image:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow:
+        0 0 0 8px rgba(0,191,255,0.25),
+        0 28px 55px rgba(0,191,255,0.5);
 }
+
 
 /* DOWNLOAD CV */
 .btn-download-cv {
