@@ -66,62 +66,40 @@ def services(request):
 
 
 # ================= CONTACT =================
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import ContactMessage, ContactInfo
-from twilio.rest import Client
-import logging
-
-logger = logging.getLogger(__name__)
-
 def contact_view(request):
     contact_info = ContactInfo.objects.first()
 
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
         message_content = request.POST.get('message')
 
-        if not name or not email or not phone or not message_content:
+        if not name or not email or not message_content:
             messages.error(request, "All fields are required.")
             return redirect('contact')
 
-        # Save message in database
         ContactMessage.objects.create(
             name=name,
             email=email,
-            phone=phone,
             message=message_content
         )
 
         try:
-            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-
-            # Send WhatsApp message to admin
-            client.messages.create(
-                body=f"New message from {name} ({phone}, {email}): {message_content}",
-                from_=settings.TWILIO_WHATSAPP_NUMBER,
-                to=settings.MY_WHATSAPP_NUMBER
+            send_mail(
+                subject=f"New Contact Message from {name}",
+                message=f"From: {name} ({email})\n\n{message_content}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.CONTACT_EMAIL],
+                fail_silently=False,
             )
-
-            # Send WhatsApp confirmation to user
-            client.messages.create(
-                body=f"Hi {name}, thanks for reaching out! I received your message and will reply soon.",
-                from_=settings.TWILIO_WHATSAPP_NUMBER,
-                to=f"whatsapp:{phone}"
-            )
-
-            messages.success(request, "Message sent! WhatsApp confirmation delivered.")
-
+            messages.success(request, "Thank you! Your message has been sent.")
         except Exception as e:
-            logger.error(f"WhatsApp sending failed: {e}")
-            messages.error(request, "Message saved, but WhatsApp confirmation failed.")
+            logger.error(f"Email sending failed: {e}")
+            messages.error(request, "Message saved, but email failed to send.")
 
         return redirect('contact')
 
     return render(request, 'contact.html', {'contact_info': contact_info})
-
 
 
 # ================= CONTACT AJAX =================
@@ -137,7 +115,6 @@ def contact_ajax(request):
     if not name or not email or not message_content:
         return JsonResponse({'status': 'error', 'message': 'All fields are required.'})
 
-    # Save message
     ContactMessage.objects.create(
         name=name,
         email=email,
@@ -150,15 +127,12 @@ def contact_ajax(request):
             message=f"From: {name} ({email})\n\n{message_content}",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.CONTACT_EMAIL],
-            fail_silently=True,  # 🔥 CRITICAL
+            fail_silently=False,
         )
         return JsonResponse({'status': 'success', 'message': 'Message sent successfully.'})
     except Exception as e:
         logger.error(f"Email sending failed: {e}")
-        return JsonResponse({
-            'status': 'success',
-            'message': 'Message saved. We will contact you shortly.'
-        })
+        return JsonResponse({'status': 'error', 'message': 'Email failed to send.'})
 
 
 # ================= CV DOWNLOAD =================
