@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-
 # --------------------------------------------------
 # BASE
 # --------------------------------------------------
@@ -32,10 +31,10 @@ cloudinary.config(
 )
 
 # --------------------------------------------------
-# MEDIA FILES (Cloudinary)
+# MEDIA (Cloudinary)
 # --------------------------------------------------
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = "/media/"
+MEDIA_URL = "/media/"  # optional but fine
 
 # --------------------------------------------------
 # APPS
@@ -48,10 +47,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Local app
     "core",
 
-    # Cloudinary
     "cloudinary",
     "cloudinary_storage",
 ]
@@ -95,7 +92,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "portfolio_site.wsgi.application"
 
 # --------------------------------------------------
-# DATABASE
+# DATABASE (SQLite – OK for now)
 # --------------------------------------------------
 DATABASES = {
     "default": {
@@ -123,24 +120,16 @@ USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# STATIC FILES (WhiteNoise)
+# STATIC FILES
 # --------------------------------------------------
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "core/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # --------------------------------------------------
-# MEDIA FILES (Cloudinary)
-# --------------------------------------------------
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-
-# --------------------------------------------------
-# EMAIL (Contact Form)
+# EMAIL
 # --------------------------------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -154,7 +143,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_EMAIL = EMAIL_HOST_USER
 
 # --------------------------------------------------
-# SECURITY (Production)
+# SECURITY
 # --------------------------------------------------
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
@@ -165,15 +154,14 @@ else:
     SESSION_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False
 
-
-
 # --------------------------------------------------
-# DEFAULT PRIMARY KEY
+# DEFAULT PK
 # --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-import os
-
+# --------------------------------------------------
+# TWILIO
+# --------------------------------------------------
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
