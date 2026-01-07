@@ -8,95 +8,64 @@
     <div class="section-header reveal">
         <h2>{{ about_info.title }}</h2>
         <p>{{ about_info.description }}</p>
-        <a href="{% static 'resume/Mcondisi_Resume.pdf' %}" class="btn-resume" target="_blank">Download Resume</a>
+
+        {% if about_info.cv %}
+        <a href="{% url 'download_cv' %}" class="btn-download-cv">
+            Download Resume (PDF)
+        </a>
+        {% endif %}
     </div>
 
-    <div class="about-content-container">
-        <!-- Skills List -->
-        <ul class="skills-list">
-            {% for skill in skills %}
-            <li class="skill-card">
-                <div class="skill-circle" data-percentage="{{ skill.proficiency }}">
-                    <svg width="120" height="120">
-                        <circle class="skill-bg" cx="60" cy="60" r="50"></circle>
-                        <circle class="skill-progress" cx="60" cy="60" r="50"></circle>
-                    </svg>
-                    <div class="skill-percentage">0%</div>
-                </div>
-                <div class="skill-name">
-                    {% if skill.icon %}
-                        <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="skill-icon">
-                    {% endif %}
-                    <span>{{ skill.name }}</span>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
+    <!-- ================= SKILLS ================= -->
+    <ul class="skills-list">
+        {% for skill in skills %}
+        <li class="skill-card">
+            <div class="skill-circle" data-percentage="{{ skill.proficiency }}">
+                <svg width="120" height="120">
+                    <circle class="skill-bg" cx="60" cy="60" r="50"></circle>
+                    <circle class="skill-progress" cx="60" cy="60" r="50"></circle>
+                </svg>
+                <span class="skill-percentage">0%</span>
+            </div>
 
-        <!-- Timeline (optional) -->
-        <ul class="timeline">
-            {% for event in timeline %}
-            <li class="timeline-item">
-                <span class="timeline-date">{{ event.date }}</span>
-                <h3 class="timeline-title">{{ event.title }}</h3>
-                <p class="timeline-description">{{ event.description }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
+            <div class="skill-name">
+                {% if skill.icon %}
+                    <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="skill-icon">
+                {% endif %}
+                <span>{{ skill.name }}</span>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
 </section>
 
-{% endblock %}
-
-{% block extra_css %}
+<!-- ================= STYLES ================= -->
 <style>
-/* ===== Section ===== */
-.section.about {
-    padding: 60px 20px;
-    background-color: #111;
-    color: #fff;
-    text-align: center;
-}
-
-.section-header h2 {
-    font-size: 36px;
-    margin-bottom: 10px;
-}
-
-.section-header p {
-    max-width: 600px;
-    margin: 0 auto 20px;
-    font-size: 16px;
-    color: #ccc;
-}
-
-/* ===== Resume Button ===== */
-.btn-resume {
+/* DOWNLOAD CV */
+.btn-download-cv {
     display: inline-block;
-    padding: 12px 25px;
-    margin-top: 15px;
-    background: #00bfff;
+    margin-top: 20px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #00bfff, #0077ff);
     color: #fff;
-    font-weight: bold;
-    border-radius: 8px;
+    border-radius: 10px;
+    font-weight: 600;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
-
-.btn-resume:hover {
-    background: #03da96;
+.btn-download-cv:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
-/* ===== Skills ===== */
+/* SKILLS */
 .skills-list {
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 40px;
-    margin-top: 40px;
+    margin-top: 50px;
     padding: 0;
+    list-style: none;
 }
 
 .skill-card {
@@ -116,25 +85,24 @@
 
 .skill-circle svg {
     position: absolute;
-    transform: rotate(-90deg);
     width: 100%;
     height: 100%;
+    transform: rotate(-90deg);
 }
 
 .skill-bg {
     fill: none;
-    stroke: rgba(255,255,255,0.1);
+    stroke: #ddd;
     stroke-width: 10;
 }
 
 .skill-progress {
     fill: none;
-    stroke: #00bfff;
     stroke-width: 10;
     stroke-linecap: round;
     stroke-dasharray: 314;
     stroke-dashoffset: 314;
-    transition: stroke-dashoffset 1.5s ease-out;
+    transition: stroke-dashoffset 1.5s ease-out, stroke 0.3s ease;
 }
 
 .skill-percentage {
@@ -142,70 +110,31 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
-    color: #fff;
+    color: #333;
     pointer-events: none;
 }
 
 .skill-name {
-    margin-top: 10px;
+    margin-top: 12px;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #fff;
+    gap: 6px;
 }
 
 .skill-icon {
-    width: 24px;
-    height: 24px;
-}
-
-/* ===== Timeline ===== */
-.timeline {
-    list-style: none;
-    margin-top: 60px;
-    padding: 0;
-}
-
-.timeline-item {
-    margin-bottom: 40px;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease-out;
-}
-
-.timeline-item.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.timeline-date {
-    font-weight: bold;
-    color: #00bfff;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.timeline-title {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
-
-.timeline-description {
-    color: #ccc;
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
 }
 </style>
-{% endblock %}
 
-{% block extra_js %}
+<!-- ================= SCRIPT ================= -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const skillCircles = document.querySelectorAll(".skill-circle");
-    const timelineItems = document.querySelectorAll(".timeline-item");
 
-    // Initialize dashoffset
     skillCircles.forEach(circle => {
         const progress = circle.querySelector(".skill-progress");
         const radius = progress.r.baseVal.value;
@@ -214,51 +143,51 @@ document.addEventListener("DOMContentLoaded", () => {
         progress.style.strokeDashoffset = circumference;
     });
 
-    function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
+    function getColor(percent) {
+        if (percent < 50) return "#e74c3c";      // red
+        if (percent < 80) return "#f39c12";      // orange
+        return "#2ecc71";                        // green
     }
 
-    function animateOnScroll() {
+    function animateSkills() {
         skillCircles.forEach(circle => {
             const rect = circle.getBoundingClientRect();
-            if (rect.top < window.innerHeight - 60 && !circle.classList.contains('animated')) {
-                circle.classList.add('animated');
+            if (rect.top < window.innerHeight - 80 && !circle.classList.contains("active")) {
+                circle.classList.add("active");
 
+                const percent = parseInt(circle.dataset.percentage);
                 const progress = circle.querySelector(".skill-progress");
-                const percent = circle.dataset.percentage;
+                const number = circle.querySelector(".skill-percentage");
                 const radius = progress.r.baseVal.value;
                 const circumference = 2 * Math.PI * radius;
-                const number = circle.querySelector(".skill-percentage");
 
+                const color = getColor(percent);
+                progress.style.stroke = color;
+
+                let current = 0;
                 const duration = 1500;
-                const startTime = performance.now();
+                const start = performance.now();
 
-                function animateCircle(now) {
-                    const elapsed = now - startTime;
-                    let progressRatio = Math.min(elapsed / duration, 1);
-                    const eased = easeOutCubic(progressRatio);
+                function animate(now) {
+                    const elapsed = now - start;
+                    const progressTime = Math.min(elapsed / duration, 1);
+                    current = Math.floor(progressTime * percent);
 
-                    progress.style.strokeDashoffset = circumference - (percent / 100) * circumference * eased;
-                    number.textContent = `${Math.round(percent * eased)}%`;
+                    progress.style.strokeDashoffset =
+                        circumference - (current / 100) * circumference;
+                    number.textContent = current + "%";
 
-                    if (progressRatio < 1) {
-                        requestAnimationFrame(animateCircle);
-                    }
+                    if (progressTime < 1) requestAnimationFrame(animate);
                 }
 
-                requestAnimationFrame(animateCircle);
-            }
-        });
-
-        timelineItems.forEach(item => {
-            if (item.getBoundingClientRect().top < window.innerHeight - 80) {
-                item.classList.add("active");
+                requestAnimationFrame(animate);
             }
         });
     }
 
-    window.addEventListener("scroll", animateOnScroll);
-    animateOnScroll();
+    window.addEventListener("scroll", animateSkills);
+    animateSkills();
 });
 </script>
+
 {% endblock %}
