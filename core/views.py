@@ -67,7 +67,6 @@ def services(request):
 
 # ================= CONTACT =================
 from django.shortcuts import render, redirect
-from django.conf import settings
 from django.contrib import messages
 from .models import ContactMessage, ContactInfo
 from twilio.rest import Client
@@ -97,17 +96,16 @@ def contact_view(request):
         )
 
         try:
-            # Twilio Client
             client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
-            # 1️⃣ Send WhatsApp message TO YOU (admin)
+            # Send WhatsApp message to admin
             client.messages.create(
                 body=f"New message from {name} ({phone}, {email}): {message_content}",
                 from_=settings.TWILIO_WHATSAPP_NUMBER,
                 to=settings.MY_WHATSAPP_NUMBER
             )
 
-            # 2️⃣ Send WhatsApp confirmation TO USER
+            # Send WhatsApp confirmation to user
             client.messages.create(
                 body=f"Hi {name}, thanks for reaching out! I received your message and will reply soon.",
                 from_=settings.TWILIO_WHATSAPP_NUMBER,
