@@ -39,6 +39,34 @@
     </ul>
 </section>
 
+<!-- ================= JOURNEY ================= -->
+<section class="section journey">
+    <div class="section-header reveal">
+        <h2>My Journey</h2>
+        <p>My professional and learning path</p>
+    </div>
+
+    <div class="timeline">
+        {% for event in timeline %}
+        <div class="timeline-item reveal">
+            <div class="timeline-dot">
+                {% if event.icon %}
+                    <img src="{{ event.icon.url }}" alt="{{ event.title }}">
+                {% else %}
+                    <span></span>
+                {% endif %}
+            </div>
+
+            <div class="timeline-content">
+                <span class="timeline-year">{{ event.year }}</span>
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
 <!-- ================= STYLES ================= -->
 <style>
 /* DOWNLOAD CV */
@@ -78,9 +106,6 @@
     position: relative;
     width: 120px;
     height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .skill-circle svg {
@@ -102,18 +127,18 @@
     stroke-linecap: round;
     stroke-dasharray: 314;
     stroke-dashoffset: 314;
-    transition: stroke-dashoffset 1.5s ease-out, stroke 0.3s ease;
+    transition: stroke-dashoffset 1.5s ease-out;
 }
 
 .skill-percentage {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 20px;
     font-weight: bold;
     color: #333;
-    pointer-events: none;
 }
 
 .skill-name {
@@ -127,6 +152,73 @@
 .skill-icon {
     width: 20px;
     height: 20px;
+}
+
+/* ================= JOURNEY ================= */
+.journey {
+    margin-top: 80px;
+}
+
+.timeline {
+    max-width: 800px;
+    margin: 50px auto 0;
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #0077ff;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.timeline-dot span,
+.timeline-dot img {
+    width: 16px;
+    height: 16px;
+    background: #0077ff;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+.timeline-dot img {
+    object-fit: cover;
+}
+
+.timeline-content {
+    background: #fff;
+    padding: 18px 22px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.timeline-year {
+    font-size: 14px;
+    font-weight: bold;
+    color: #0077ff;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .timeline {
+        padding-left: 10px;
+    }
 }
 </style>
 
@@ -144,9 +236,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function getColor(percent) {
-        if (percent < 50) return "#e74c3c";      // red
-        if (percent < 80) return "#f39c12";      // orange
-        return "#2ecc71";                        // green
+        if (percent < 50) return "#e74c3c";
+        if (percent < 80) return "#f39c12";
+        return "#2ecc71";
     }
 
     function animateSkills() {
@@ -161,25 +253,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 const radius = progress.r.baseVal.value;
                 const circumference = 2 * Math.PI * radius;
 
-                const color = getColor(percent);
-                progress.style.stroke = color;
+                progress.style.stroke = getColor(percent);
 
                 let current = 0;
-                const duration = 1500;
                 const start = performance.now();
+                const duration = 1500;
 
                 function animate(now) {
                     const elapsed = now - start;
-                    const progressTime = Math.min(elapsed / duration, 1);
-                    current = Math.floor(progressTime * percent);
+                    const t = Math.min(elapsed / duration, 1);
+                    current = Math.floor(t * percent);
 
                     progress.style.strokeDashoffset =
                         circumference - (current / 100) * circumference;
                     number.textContent = current + "%";
 
-                    if (progressTime < 1) requestAnimationFrame(animate);
+                    if (t < 1) requestAnimationFrame(animate);
                 }
-
                 requestAnimationFrame(animate);
             }
         });
