@@ -1,17 +1,11 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-import os
 
-load_dotenv()  # loads environment variables from .env
-
-# --------------------------------------------------
-# BASE
-# --------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-key")
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = os.environ.get("DEBUG", "").lower() == "true"
+
 
 ALLOWED_HOSTS = [
     "portfolio-website-6mc1.onrender.com",
@@ -38,7 +32,6 @@ cloudinary.config(
 # MEDIA (Cloudinary)
 # --------------------------------------------------
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = "/media/"  # optional but fine
 
 # --------------------------------------------------
 # APPS
