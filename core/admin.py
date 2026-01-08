@@ -1,154 +1,76 @@
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import (
-    HeroSection,
-    About,
-    Skill,
-    TimelineEvent,
-    Project,
-    Service,
-    ContactInfo,
-    SocialLink
-)
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, JsonResponse, FileResponse
+from django.conf import settings
+from .models import HeroSection, About, Project, Service, TimelineEvent, Skill, ContactInfo, ContactMessage
+import os
 
-# ================= GLOBAL PROTECTION =================
-class AdminOnlyDeleteMixin:
-    """Only superusers can delete objects"""
+# ---------------- Home ----------------
+def home(request):
+    hero = HeroSection.objects.filter(is_active=True).first()
+    skills = Skill.objects.all()
+    timeline = TimelineEvent.objects.all()
+    projects = Project.objects.all()[:6]
+    services = Service.objects.all()
+    return render(request, "core/home.html", {
+        "hero": hero,
+        "skills": skills,
+        "timeline": timeline,
+        "projects": projects,
+        "services": services,
+    })
 
-    def has_delete_permission(self, request, obj=None):
-        return request.user.is_superuser
+# ---------------- About ----------------
+def about(request):
+    about_info = About.objects.first()
+    skills = Skill.objects.all()
+    timeline = TimelineEvent.objects.all()
+    return render(request, "core/about.html", {
+        "about_info": about_info,
+        "skills": skills,
+        "timeline": timeline,
+    })
 
+# ---------------- Projects ----------------
+def projects(request):
+    projects = Project.objects.all()
+    return render(request, "core/projects.html", {"projects": projects})
 
-# ================= HERO SECTION =================
-@admin.register(HeroSection)
-class HeroSectionAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("name", "title", "is_active", "preview_image")
-    list_filter = ("is_active",)
-    search_fields = ("name", "title")
-    ordering = ("-is_active", "name")
-    readonly_fields = ("preview_image",)
+def project_detail(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    return render(request, "core/project_detail.html", {"project": project})
 
-    def preview_image(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" width="70" style="border-radius:6px; object-fit:cover;" />',
-                obj.image.url,
-            )
-        return "-"
+# ---------------- Services ----------------
+def services(request):
+    services = Service.objects.all()
+    return render(request, "core/services.html", {"services": services})
 
-    preview_image.short_description = "Image Preview"
+# ---------------- Contact ----------------
+def contact_view(request):
+    contact_info = ContactInfo.objects.first()
+    return render(request, "core/contact.html", {"contact_info": contact_info})
 
+def contact_ajax(request):
+    if request.method == "POST" and request.is_ajax():
+        ContactMessage.objects.create(
+            name=request.POST.get("name"),
+            email=request.POST.get("email"),
+            message=request.POST.get("message")
+        )
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False}, status=400)
 
-# ================= ABOUT SECTION =================
-@admin.register(About)
-class AboutAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("title", "preview_image", "cv_link", "cv_downloads")
-    search_fields = ("title",)
-    readonly_fields = ("preview_image", "cv_downloads")
+# ---------------- Download CV ----------------
+def download_cv(request):
+    about = About.objects.first()
+    if not about or not about.cv:
+        return HttpResponse("CV not available", status=404)
 
-    def preview_image(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" width="60" style="border-radius:50%; object-fit:cover;" />',
-                obj.image.url,
-            )
-        return "-"
+    if hasattr(about.cv, "url"):
+        return redirect(about.cv.url)
 
-    preview_image.short_description = "Profile Image"
-
-    def cv_link(self, obj):
-        if obj.cv:
-            return format_html('<a href="{}" target="_blank">View CV</a>', obj.cv.url)
-        return "No CV"
-
-    cv_link.short_description = "Resume (PDF)"
-
-
-# ================= SKILLS =================
-@admin.register(Skill)
-class SkillAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("name", "proficiency", "preview_icon")
-    list_filter = ("proficiency",)
-    search_fields = ("name",)
-    readonly_fields = ("preview_icon",)
-
-    def preview_icon(self, obj):
-        if obj.icon:
-            return format_html('<img src="{}" width="40" />', obj.icon.url)
-        return "-"
-
-    preview_icon.short_description = "Icon Preview"
-
-
-# ================= TIMELINE EVENTS =================
-@admin.register(TimelineEvent)
-class TimelineEventAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("year", "title", "order", "preview_icon")
-    list_editable = ("order",)
-    ordering = ("order",)
-    readonly_fields = ("preview_icon",)
-
-    def preview_icon(self, obj):
-        if obj.icon:
-            return format_html('<img src="{}" width="40" />', obj.icon.url)
-        return "-"
-
-    preview_icon.short_description = "Icon Preview"
-
-
-# ================= PROJECTS =================
-@admin.register(Project)
-class ProjectAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("title", "preview_image", "features", "created_at")
-    list_display_links = ("title",)
-    search_fields = ("title", "features")
-    list_filter = ("created_at",)
-    readonly_fields = ("preview_image",)
-
-    def preview_image(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" width="70" style="border-radius:6px; object-fit:cover;" />',
-                obj.image.url,
-            )
-        return "-"
-
-    preview_image.short_description = "Preview"
-
-
-# ================= SERVICES =================
-@admin.register(Service)
-class ServiceAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("title", "preview_icon", "order")
-    list_editable = ("order",)
-    ordering = ("order",)
-    readonly_fields = ("preview_icon",)
-
-    def preview_icon(self, obj):
-        if obj.icon:
-            return format_html('<img src="{}" width="40" />', obj.icon.url)
-        return "-"
-
-    preview_icon.short_description = "Icon Preview"
-
-
-# ================= CONTACT INFO =================
-@admin.register(ContactInfo)
-class ContactInfoAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("email", "phone", "address")
-
-
-# ================= SOCIAL LINKS =================
-@admin.register(SocialLink)
-class SocialLinkAdmin(AdminOnlyDeleteMixin, admin.ModelAdmin):
-    list_display = ("name", "url", "order", "preview_icon")
-    list_editable = ("order",)
-    ordering = ("order",)
-    readonly_fields = ("preview_icon",)
-
-    def preview_icon(self, obj):
-        if obj.icon:
-            return format_html('<img src="{}" width="40" />', obj.icon.url)
-        return "-"
-
-    preview_icon.short_description = "Icon Preview"
+    file_path = os.path.join(settings.MEDIA_ROOT, about.cv.name)
+    if os.path.exists(file_path):
+        response = FileResponse(open(file_path, "rb"), content_type="application/pdf")
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+        return response
+    return HttpResponse("CV not found", status=404)

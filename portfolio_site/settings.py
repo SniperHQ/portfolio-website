@@ -1,26 +1,24 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+import cloudinary
+
+# -------------------------- Load environment --------------------------
+load_dotenv()  # loads from .env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-dev-key")
-DEBUG = os.environ.get("DEBUG", "").lower() == "true"
-
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
-    "portfolio-website-6mc1.onrender.com",
-    "portfolio-website-vrcd.onrender.com",
     "localhost",
     "127.0.0.1",
+    "portfolio-website-6mc1.onrender.com",
+    "portfolio-website-vrcd.onrender.com",
 ]
 
-# --------------------------------------------------
-# CLOUDINARY CONFIG
-# --------------------------------------------------
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
-
+# -------------------------- Cloudinary --------------------------
 cloudinary.config(
     cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
     api_key=os.environ.get("CLOUDINARY_API_KEY"),
@@ -28,14 +26,16 @@ cloudinary.config(
     secure=True,
 )
 
-# --------------------------------------------------
-# MEDIA (Cloudinary)
-# --------------------------------------------------
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+# -------------------------- Media --------------------------
+if DEBUG:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+else:
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    MEDIA_URL = "/media/"
 
-# --------------------------------------------------
-# APPS
-# --------------------------------------------------
+# -------------------------- Installed apps --------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -50,13 +50,10 @@ INSTALLED_APPS = [
     "cloudinary_storage",
 ]
 
-# --------------------------------------------------
-# MIDDLEWARE
-# --------------------------------------------------
+# -------------------------- Middleware --------------------------
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -67,13 +64,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "portfolio_site.urls"
 
-# --------------------------------------------------
-# TEMPLATES
-# --------------------------------------------------
+# -------------------------- Templates --------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "core" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -88,9 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "portfolio_site.wsgi.application"
 
-# --------------------------------------------------
-# DATABASE (SQLite – OK for now)
-# --------------------------------------------------
+# -------------------------- Database --------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -98,50 +91,13 @@ DATABASES = {
     }
 }
 
-# --------------------------------------------------
-# PASSWORD VALIDATION
-# --------------------------------------------------
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
-
-# --------------------------------------------------
-# INTERNATIONALIZATION
-# --------------------------------------------------
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
-USE_I18N = True
-USE_TZ = True
-
-# --------------------------------------------------
-# STATIC FILES
-# --------------------------------------------------
+# -------------------------- Static files --------------------------
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "core/static"]
+STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# --------------------------------------------------
-# EMAIL
-# --------------------------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-CONTACT_EMAIL = EMAIL_HOST_USER
-
-# --------------------------------------------------
-# SECURITY
-# --------------------------------------------------
+# -------------------------- Security --------------------------
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
@@ -151,15 +107,4 @@ else:
     SESSION_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False
 
-# --------------------------------------------------
-# DEFAULT PK
-# --------------------------------------------------
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# --------------------------------------------------
-# TWILIO
-# --------------------------------------------------
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER")
-MY_WHATSAPP_NUMBER = os.getenv("MY_WHATSAPP_NUMBER")

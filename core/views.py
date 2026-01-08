@@ -1,160 +1,109 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core.mail import send_mail
-from django.http import JsonResponse, FileResponse, Http404
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.conf import settings
-from django.contrib import messages
-
 from .models import (
-    HeroSection,
-    About,
-    Skill,
-    TimelineEvent,
-    Project,
-    Service,
-    ContactInfo,
-    ContactMessage,
-    SocialLink
+    HeroSection, About, Project, Service, TimelineEvent,
+    Skill, ContactInfo, ContactMessage, SocialLink
 )
+import os
 
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-# ================= HOME =================
+# ---------------- Home Page ----------------
 def home(request):
     hero = HeroSection.objects.filter(is_active=True).first()
-    projects = Project.objects.all().order_by('-created_at')[:3]
+    skills = Skill.objects.all()
+    timeline = TimelineEvent.objects.all()
+    projects = Project.objects.all()[:6]  # show first 6
     services = Service.objects.all()
+    context = {
+        "hero": hero,
+        "skills": skills,
+        "timeline": timeline,
+        "projects": projects,
+        "services": services,
+    }
+    return render(request, "core/home.html", context)
 
-    return render(request, 'home.html', {
-        'hero': hero,
-        'projects': projects,
-        'services': services,
-    })
 
-
-# ================= ABOUT =================
+# ---------------- About Page ----------------
 def about(request):
     about_info = About.objects.first()
     skills = Skill.objects.all()
     timeline = TimelineEvent.objects.all()
+    context = {
+        "about_info": about_info,
+        "skills": skills,
+        "timeline": timeline,
+    }
+    return render(request, "core/about.html", context)
 
-    return render(request, 'about.html', {
-        'about_info': about_info,
-        'skills': skills,
-        'timeline': timeline,
-    })
 
-
-# ================= PROJECTS =================
+# ---------------- Projects List ----------------
 def projects(request):
-    projects_list = Project.objects.all().order_by('-created_at')
-    return render(request, 'projects.html', {'projects': projects_list})
+    projects_list = Project.objects.all()
+    context = {"projects": projects_list}
+    return render(request, "core/projects.html", context)
 
 
+# ---------------- Project Detail ----------------
 def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    return render(request, 'project_detail.html', {'project': project})
+    context = {"project": project}
+    return render(request, "core/project_detail.html", context)
 
 
-# ================= SERVICES =================
+# ---------------- Services ----------------
 def services(request):
     services_list = Service.objects.all()
-    return render(request, 'services.html', {'services': services_list})
+    context = {"services": services_list}
+    return render(request, "core/services.html", context)
 
 
-# ================= CONTACT =================
+# ---------------- Contact ----------------
 def contact_view(request):
     contact_info = ContactInfo.objects.first()
-
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        message_content = request.POST.get('message')
-
-        if not name or not email or not message_content:
-            messages.error(request, "All fields are required.")
-            return redirect('contact')
-
-        ContactMessage.objects.create(
-            name=name,
-            email=email,
-            message=message_content
-        )
-
-        try:
-            send_mail(
-                subject=f"New Contact Message from {name}",
-                message=f"From: {name} ({email})\n\n{message_content}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[settings.CONTACT_EMAIL],
-                fail_silently=False,
-            )
-            messages.success(request, "Thank you! Your message has been sent.")
-        except Exception as e:
-            logger.error(f"Email sending failed: {e}")
-            messages.error(request, "Message saved, but email failed to send.")
-
-        return redirect('contact')
-
-    return render(request, 'contact.html', {'contact_info': contact_info})
+    context = {"contact_info": contact_info}
+    return render(request, "core/contact.html", context)
 
 
-# ================= CONTACT AJAX =================
-@csrf_exempt
+# ---------------- Contact AJAX ----------------
 def contact_ajax(request):
-    if request.method != 'POST':
-        return JsonResponse({'status': 'error', 'message': 'Invalid request.'})
-
-    name = request.POST.get('name')
-    email = request.POST.get('email')
-    message_content = request.POST.get('message')
-
-    if not name or not email or not message_content:
-        return JsonResponse({'status': 'error', 'message': 'All fields are required.'})
-
-    ContactMessage.objects.create(
-        name=name,
-        email=email,
-        message=message_content
-    )
-
-    try:
-        send_mail(
-            subject=f"New Contact Message from {name}",
-            message=f"From: {name} ({email})\n\n{message_content}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.CONTACT_EMAIL],
-            fail_silently=False,
-        )
-        return JsonResponse({'status': 'success', 'message': 'Message sent successfully.'})
-    except Exception as e:
-        logger.error(f"Email sending failed: {e}")
-        return JsonResponse({'status': 'error', 'message': 'Email failed to send.'})
+    if request.method == "POST" and request.is_ajax():
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+        ContactMessage.objects.create(name=name, email=email, message=message)
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False}, status=400)
 
 
-# ================= CV DOWNLOAD =================
+# ---------------- Download CV ----------------
 def download_cv(request):
-    about = About.objects.first()
+    about_info = About.objects.first()
+    if not about_info or not about_info.cv:
+        return HttpResponse("CV not available", status=404)
 
-    if not about or not about.cv:
-        raise Http404("CV not available")
+    # ---------------- Cloudinary ----------------
+    if hasattr(about_info.cv, 'url'):
+        return redirect(about_info.cv.url)
 
-    # 📈 Track downloads
-    about.cv_downloads += 1
-    about.save(update_fields=['cv_downloads'])
+    # ---------------- Local ----------------
+    file_path = os.path.join(settings.MEDIA_ROOT, about_info.cv.name)
+    if os.path.exists(file_path):
+        response = FileResponse(open(file_path, 'rb'), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+        return response
 
-    return FileResponse(
-        about.cv.open(),
-        as_attachment=True,
-        filename=about.cv.name.split('/')[-1]
-    )
+    return HttpResponse("CV not found", status=404)
 
 
-# ================= CONTEXT PROCESSOR =================
+# ---------------- Base Context for Templates ----------------
 def base_context(request):
+    """
+    Add global context variables accessible in all templates.
+    """
+    social_links = SocialLink.objects.all()
+    contact_info = ContactInfo.objects.first()
     return {
-        'social_links': SocialLink.objects.all()
+        "social_links": social_links,
+        "contact_info": contact_info,
     }
